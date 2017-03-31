@@ -42,7 +42,7 @@
           <appendAssemblyId>false</appendAssemblyId>
           <archive>
             <manifest>
-              <mainClass>Main</mainClass>
+              <mainClass>ylc.appier.challenge.Main</mainClass>
             </manifest>
           </archive>
         </configuration>
