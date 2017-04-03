@@ -17,8 +17,9 @@ public class Main{
     	DbHandler.init();
     	UbikeInfo.init();
     	
-        HttpServer server = HttpServer.create(new InetSocketAddress(System.getenv("PORT")), 0);
-        server.createContext("/v1/ubike-station/taipei", new HttpRequestHandler());
+        int port = Integer.parseInt(System.getenv("PORT"));
+		HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+		server.createContext("/v1/ubike-station/taipei", new HttpRequestHandler());
         server.start();
     }
     
