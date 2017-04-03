@@ -1,5 +1,6 @@
 package ylc.appier.challenge.ubike;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,7 +22,8 @@ public class UbikeSelector {
 		
 	}
 	
-	public List<UbikeResult> selectNearestStations(double lat, double lng, int maxNum){
+	public List<UbikeResult> selectNearestStations(double lat, double lng, int maxNum) 
+			throws SQLException{
 		UbikeDbHelper dbHelper = new UbikeDbHelper();
 		List<UbikeInfo> infos = dbHelper.getStations();
 		Collections.sort(infos, new StationComparator(lat, lng));

@@ -14,28 +14,23 @@ public class UbikeDbHelper {
 	private static final String INFO_TABLE_NAME = "ubike_info"; //TODO: table name env
 	private static final String STATUS_TABLE_NAME = "ubike_status"; //TODO: table name env
 	
-	public UbikeDbHelper(){
+	public UbikeDbHelper() throws SQLException{
 		dbConnection = DbHandler.getConnection();
 	}
 	
-	public List<UbikeInfo> getStations(){
+	public List<UbikeInfo> getStations() throws SQLException {
 		ArrayList<UbikeInfo> stations = new ArrayList<>();		
-		Statement stmt;
-		try {
-			stmt = dbConnection.createStatement();			
-	        ResultSet rs = stmt.executeQuery("SELECT * FROM " + INFO_TABLE_NAME);
-	        while (rs.next()) {
-	        	UbikeInfo station = new UbikeInfo();
-	        	station.setId(rs.getInt("id"));
-	        	station.setLat(rs.getDouble("lat"));
-	        	station.setLng(rs.getDouble("lng"));
-	        	station.setSna(rs.getString("sna"));
-	        	stations.add(station);
-	        }
-	        rs.close();
-		} catch (Exception e) {		
-			e.printStackTrace();
-		}
+		Statement stmt = dbConnection.createStatement();			
+        ResultSet rs = stmt.executeQuery("SELECT * FROM " + INFO_TABLE_NAME);
+        while (rs.next()) {
+        	UbikeInfo station = new UbikeInfo();
+        	station.setId(rs.getInt("id"));
+        	station.setLat(rs.getDouble("lat"));
+        	station.setLng(rs.getDouble("lng"));
+        	station.setSna(rs.getString("sna"));
+        	stations.add(station);
+        }
+        rs.close();
 		
 		return stations;
 	}

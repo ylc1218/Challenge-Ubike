@@ -10,7 +10,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 public class DbHandler {
 	private static ComboPooledDataSource cpds = null;
 	
-	static{
+	public static void init(){
 		cpds = new ComboPooledDataSource();
 		try {
 			// get db path
@@ -34,34 +34,10 @@ public class DbHandler {
 		} catch (PropertyVetoException | URISyntaxException e) {
 			e.printStackTrace();
 		}
-	}	
+	}
 	
-	public static Connection getConnection(){
-		Connection connection = null;
-		try {
-			
-			connection = cpds.getConnection();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return connection;
-		
-		/*try {
-			if (connection != null && connection.isValid(5)){
-				return connection;
-			}
-			
-			URI dbUri;
-			dbUri = new URI(System.getenv("DATABASE_URL"));
-	        String username = dbUri.getUserInfo().split(":")[0];
-	        String password = dbUri.getUserInfo().split(":")[1];
-	        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + dbUri.getPath() + "?sslmode=require";
-	        connection = DriverManager.getConnection(dbUrl, username, password);
-	        
-		} catch (URISyntaxException | SQLException e) {			
-			e.printStackTrace();
-		}	        
-        return connection;*/ 	
+	public static Connection getConnection() throws SQLException{
+		return cpds.getConnection();		
     }	
 	
 	@Override

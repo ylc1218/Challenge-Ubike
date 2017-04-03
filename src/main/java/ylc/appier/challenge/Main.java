@@ -9,8 +9,11 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+import ylc.appier.challenge.db.DbHandler;
+
 public class Main{
     public static void main(String[] args) throws Exception {
+    	DbHandler.init();
         HttpServer server = HttpServer.create(new InetSocketAddress(80), 0);
         server.createContext("/v1/ubike-station/taipei", new HttpRequestHandler());
         server.start();
