@@ -25,7 +25,7 @@ public class UbikeSelector {
 	public List<UbikeResult> selectNearestStations(double lat, double lng, int maxNum) 
 			throws SQLException{
 		UbikeDbHelper dbHelper = new UbikeDbHelper();
-		List<UbikeInfo> infos = dbHelper.getStations();
+		List<UbikeInfo> infos = UbikeInfo.getCachedInfos();
 		Collections.sort(infos, new StationComparator(lat, lng));
 		List<UbikeResult> results = new ArrayList<>(maxNum);
 		int count = 0;

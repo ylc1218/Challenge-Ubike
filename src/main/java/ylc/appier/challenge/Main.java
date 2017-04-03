@@ -10,10 +10,13 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import ylc.appier.challenge.db.DbHandler;
+import ylc.appier.challenge.ubike.UbikeInfo;
 
 public class Main{
     public static void main(String[] args) throws Exception {
     	DbHandler.init();
+    	UbikeInfo.init();
+    	
         HttpServer server = HttpServer.create(new InetSocketAddress(80), 0);
         server.createContext("/v1/ubike-station/taipei", new HttpRequestHandler());
         server.start();
