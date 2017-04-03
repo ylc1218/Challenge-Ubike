@@ -7,7 +7,7 @@ import java.sql.*;
 public class DbHandler {
 	private static Connection connection = null;
 	
-	public static Connection getConnection(){
+	public static Connection getConnection(){ // TODO: connection pool
 		try {
 			if (connection != null && connection.isValid(5)){
 				return connection;
@@ -15,7 +15,6 @@ public class DbHandler {
 			
 			URI dbUri;
 			dbUri = new URI(System.getenv("DATABASE_URL"));
-			System.out.println("dbUri = " + dbUri.getPath());
 	        String username = dbUri.getUserInfo().split(":")[0];
 	        String password = dbUri.getUserInfo().split(":")[1];
 	        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + dbUri.getPath() + "?sslmode=require";
@@ -25,6 +24,5 @@ public class DbHandler {
 			e.printStackTrace();
 		}		        
         return connection; 	
-    }		
-	
+    }	
 }

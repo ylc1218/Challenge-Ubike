@@ -60,7 +60,6 @@ public class UbikeInfo {
 		try {
 			stmt = dbConnection.createStatement();			
 	        ResultSet rs = stmt.executeQuery("SELECT * FROM " + INFO_TABLE_NAME);
-	        System.out.println("select done");
 	        while (rs.next()) {
 	        	UbikeInfo station = new UbikeInfo();
 	        	station.setId(rs.getInt("id"));
@@ -82,10 +81,9 @@ public class UbikeInfo {
 		Statement stmt;
 		try {
 			stmt = dbConnection.createStatement();			
-	        ResultSet rs = stmt.executeQuery("SELECT sbi, act FROM "+ STATUS_TABLE_NAME +" where id = " + id);
-	        System.out.println("select done");
+	        ResultSet rs = stmt.executeQuery("SELECT sbi, act FROM "+ STATUS_TABLE_NAME +" where id = " + id);	        
 	        while (rs.next()) {
-	        	if (rs.getInt("act") == 0){
+	        	if (rs.getInt("act") == 1){
 	        		sbi = rs.getInt("sbi");
 	        	}
 	        }

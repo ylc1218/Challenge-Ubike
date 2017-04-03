@@ -22,13 +22,13 @@ public class UbikeSelector {
 	
 	public ArrayList<UbikeStation> selectNearestStations(double lat, double lng, int maxNum){		 
 		ArrayList<UbikeInfo> infos = UbikeInfo.getActiveStations();
-		System.out.println(infos.size());
 		Collections.sort(infos, new StationComparator(lat, lng));
 		ArrayList<UbikeStation> stations = new ArrayList<>(maxNum);
 		int count = 0;
 		for(UbikeInfo info : infos){
 			int sbi = UbikeInfo.getStationSbi(info.getId()); // TODO: info.dbGetSbi()
-			if (sbi != 0){
+			//System.out.println(info.getSna() + " " + info.dist2(lat, lng));
+			if (sbi > 0){
 				count++;
 				stations.add(new UbikeStation(info.getSna(), sbi));
 			}
