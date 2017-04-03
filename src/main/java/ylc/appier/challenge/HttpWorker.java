@@ -8,6 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.AddressComponent;
+import com.google.maps.model.AddressComponentType;
+import com.google.maps.model.AddressType;
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.LatLng;
 import com.sun.net.httpserver.HttpExchange;
 
 import ylc.appier.challenge.ubike.UbikeResult;
@@ -53,7 +61,8 @@ class HttpWorker implements Runnable{
 		}
 		catch(Exception e){ // -3: system error
 			respond(genResponse(-3, null));
-		}		                       
+			e.printStackTrace();
+		}                       
 	}
 	
 	
@@ -101,8 +110,27 @@ class HttpWorker implements Runnable{
 		}		
 	}
 	
-	private boolean inTaipeiCity(double lat, double lng){ //TODO: check location
-		return true;
+	private boolean inTaipeiCity(double lat, double lng) 
+			throws ApiException, InterruptedException, IOException{
+		
+		GeoApiContext context = new GeoApiContext().setApiKey(System.getenv("GEO_API_KEY"));
+		GeocodingResult[] results =  GeocodingApi.newRequest(context)
+		        					.latlng(new LatLng(lat, lng)).language("en")
+		        					.resultType(AddressType.ADMINISTRATIVE_AREA_LEVEL_1)
+		        					.await();
+		
+		if (results.length == 0) return false; // invalid address
+		
+		for(AddressComponent ac : results[0].addressComponents){
+			for (AddressComponentType acType : ac.types){
+				if (acType == AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1) {
+					System.out.println(ac.shortName);
+					return "Taipei City".equals(ac.shortName);
+				}
+			}
+		}
+			    		
+		return false;
 	}
 	
 	private Map<String, String> queryToMap(String query){
