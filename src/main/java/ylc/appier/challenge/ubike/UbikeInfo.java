@@ -33,8 +33,8 @@ public class UbikeInfo {
 		return sna;
 	}
 	
-	public UbikeStation createStation(){
-		return new UbikeStation(sna, -1);
+	public UbikeResult createStation(){
+		return new UbikeResult(sna, -1);
 	}
 	
 	@Override

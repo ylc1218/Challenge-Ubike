@@ -18,7 +18,7 @@ public class UbikeDbHelper {
 		dbConnection = DbHandler.getConnection();
 	}
 	
-	public List<UbikeInfo> getActiveStations(){
+	public List<UbikeInfo> getStations(){
 		ArrayList<UbikeInfo> stations = new ArrayList<>();		
 		Statement stmt;
 		try {

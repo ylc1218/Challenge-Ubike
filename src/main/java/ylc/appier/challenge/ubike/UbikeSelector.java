@@ -16,30 +16,30 @@ public class UbikeSelector {
 		public int compare(UbikeInfo o1, UbikeInfo o2) {
 			Double d1 = o1.dist2(lat, lng);
 			Double d2 = o2.dist2(lat, lng);
-			return d1.compareTo(d2); 
+			return d1.compareTo(d2);
 		}
 		
 	}
 	
-	public List<UbikeStation> selectNearestStations(double lat, double lng, int maxNum){
+	public List<UbikeResult> selectNearestStations(double lat, double lng, int maxNum){
 		UbikeDbHelper dbHelper = new UbikeDbHelper();
-		List<UbikeInfo> infos = dbHelper.getActiveStations();
+		List<UbikeInfo> infos = dbHelper.getStations();
 		Collections.sort(infos, new StationComparator(lat, lng));
-		List<UbikeStation> stations = new ArrayList<>(maxNum);
+		List<UbikeResult> results = new ArrayList<>(maxNum);
 		int count = 0;
 		for(UbikeInfo info : infos){
 			int sbi = dbHelper.getStationSbi(info.getId());
 			//System.out.println(info.getSna() + " " + info.dist2(lat, lng));
 			if (sbi > 0){
 				count++;
-				stations.add(new UbikeStation(info.getSna(), sbi));
+				results.add(new UbikeResult(info.getSna(), sbi));
 			}
 			if (count == maxNum){
 				break;
 			}
 		}
 		dbHelper.close();
-		return stations;
+		return results;
 	}
 
 }

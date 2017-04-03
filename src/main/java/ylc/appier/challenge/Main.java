@@ -1,14 +1,28 @@
 package ylc.appier.challenge;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
-import com.sun.net.httpserver.HttpServer;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
-import ylc.appier.challenge.http.HttpRequestHandler;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 
 public class Main{
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress(80), 0);
         server.createContext("/v1/ubike-station/taipei", new HttpRequestHandler());
         server.start();
+    }
+    
+    private static class HttpRequestHandler implements HttpHandler{
+    	private static Executor executor = Executors.newFixedThreadPool(5);	
+    	
+    	@Override
+        public void handle(HttpExchange t) throws IOException {
+    		executor.execute(new HttpWorker(t));
+        }
+    	
     }
 }
