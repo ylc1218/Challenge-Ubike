@@ -3,6 +3,7 @@ package ylc.appier.challenge.ubike;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 public class UbikeSelector {	
 	private class StationComparator implements Comparator<UbikeInfo>{
@@ -20,13 +21,14 @@ public class UbikeSelector {
 		
 	}
 	
-	public ArrayList<UbikeStation> selectNearestStations(double lat, double lng, int maxNum){		 
-		ArrayList<UbikeInfo> infos = UbikeInfo.getActiveStations();
+	public List<UbikeStation> selectNearestStations(double lat, double lng, int maxNum){
+		UbikeDbHelper dbHelper = new UbikeDbHelper();
+		List<UbikeInfo> infos = dbHelper.getActiveStations();
 		Collections.sort(infos, new StationComparator(lat, lng));
-		ArrayList<UbikeStation> stations = new ArrayList<>(maxNum);
+		List<UbikeStation> stations = new ArrayList<>(maxNum);
 		int count = 0;
 		for(UbikeInfo info : infos){
-			int sbi = UbikeInfo.getStationSbi(info.getId()); // TODO: info.dbGetSbi()
+			int sbi = dbHelper.getStationSbi(info.getId());
 			//System.out.println(info.getSna() + " " + info.dist2(lat, lng));
 			if (sbi > 0){
 				count++;
@@ -36,6 +38,7 @@ public class UbikeSelector {
 				break;
 			}
 		}
+		dbHelper.close();
 		return stations;
 	}
 

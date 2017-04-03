@@ -3,8 +3,8 @@ package ylc.appier.challenge.http;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -31,7 +31,7 @@ public class HttpRequestHandler implements HttpHandler{
 		String response = "lat = " + lat + ", lng = " + lng;
 		
 		UbikeSelector selector = new UbikeSelector();
-		ArrayList<UbikeStation> stations = selector.selectNearestStations(lat, lng, 2); // TODO: count
+		List<UbikeStation> stations = selector.selectNearestStations(lat, lng, 2); // TODO: count
 		System.out.println(stations.toString());		
         
         t.sendResponseHeaders(200, response.getBytes().length);
