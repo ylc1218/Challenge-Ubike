@@ -5,29 +5,35 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import ylc.appier.challenge.config.Config;
 
 public class UbikeInfo {
 	private static List<UbikeInfo> cachedInfos = null;
+	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	private int id;
 	private double lat, lng;
 	private String sna;
 		
 	public static void init() throws SQLException{
+		int cache_update_min = Config.getInt(Config.UPDATE_INFO_MIN);
 		updateCachedInfos();
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		
-		scheduler.scheduleAtFixedRate(new Runnable() { //update info cache every hour
+		scheduler.scheduleAtFixedRate(new Runnable() { //update info cache periodically
 			@Override
 			public void run() {
 				try {
 					updateCachedInfos();
-					System.out.println("Info Updated");
+					LOGGER.log(Level.INFO, "Cache info updated");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}				
 			}
-		}, 60, 60, TimeUnit.MINUTES);
+		}, cache_update_min, cache_update_min, TimeUnit.MINUTES);
 	}
 	
 	public void setId(int id){

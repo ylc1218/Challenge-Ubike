@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 import com.google.maps.GeoApiContext;
@@ -18,11 +20,15 @@ import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import com.sun.net.httpserver.HttpExchange;
 
+import ylc.appier.challenge.config.Config;
 import ylc.appier.challenge.ubike.UbikeResult;
 import ylc.appier.challenge.ubike.UbikeSelector;
 
 class HttpWorker implements Runnable{
 	private HttpExchange t;
+	private int RET_STATION_NUM = Config.getInt(Config.RETURN_STATION_NUM); 
+	private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
 	HttpWorker(HttpExchange t){
 		this.t= t;
 	}
@@ -30,7 +36,6 @@ class HttpWorker implements Runnable{
 	@Override
 	public void run(){
 		try{
-			System.out.println(t.getRequestURI().getQuery());
 			Map<String, String> params = queryToMap(t.getRequestURI().getQuery());
 			
 			// -1: invalid latitude or longitude
@@ -49,15 +54,14 @@ class HttpWorker implements Runnable{
 			}
 								
 			UbikeSelector selector = new UbikeSelector();
-			List<UbikeResult> results = selector.selectNearestStations(lat, lng, 2); // TODO: const count
+			List<UbikeResult> results = selector.selectNearestStations(lat, lng, RET_STATION_NUM);
 			if (results.isEmpty()){ // 1: ubike station full
 				respond(genResponse(1, null));
 			}
 			else{ // 0: ok
 				respond(genResponse(0, results));
 			}
-			
-			System.out.println(results.toString());
+						
 		}
 		catch(Exception e){ // -3: system error
 			respond(genResponse(-3, null));
@@ -69,12 +73,18 @@ class HttpWorker implements Runnable{
 	
 	private void respond(String response){
 		try {
-			t.sendResponseHeaders(200, response.getBytes().length);
+			String encoding = "UTF-8";
+			String contentType = "application/json";
+			t.getResponseHeaders().set("Content-Type", contentType + "; charset=" + encoding);
+			t.sendResponseHeaders(200, response.getBytes().length);						
 			OutputStream os = t.getResponseBody();
 	        os.write(response.getBytes());
-	        os.close();
+	        os.close();	        
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally{
+			LOGGER.log(Level.INFO, t.getRequestURI().getQuery() 
+									+ " " + response);
 		}
 	}
 	
@@ -124,7 +134,6 @@ class HttpWorker implements Runnable{
 		for(AddressComponent ac : results[0].addressComponents){
 			for (AddressComponentType acType : ac.types){
 				if (acType == AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1) {
-					System.out.println(ac.shortName);
 					return "Taipei City".equals(ac.shortName);
 				}
 			}

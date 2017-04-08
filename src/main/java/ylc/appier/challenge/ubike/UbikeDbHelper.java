@@ -7,12 +7,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import ylc.appier.challenge.config.Config;
 import ylc.appier.challenge.db.DbHandler;
 
 public class UbikeDbHelper {
 	private Connection dbConnection = null;
-	private static final String INFO_TABLE_NAME = "ubike_info"; //TODO: table name env
-	private static final String STATUS_TABLE_NAME = "ubike_status"; //TODO: table name env
+	private static final String INFO_TABLE_NAME = Config.getString(Config.INFO_TBL_NAME);
+	private static final String STATUS_TABLE_NAME = Config.getString(Config.STATUS_TBL_NAME);
 	
 	public UbikeDbHelper() throws SQLException{
 		dbConnection = DbHandler.getConnection();
