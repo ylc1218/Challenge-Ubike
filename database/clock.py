@@ -21,7 +21,7 @@ def timed_job():
 	print('Finish updateInfo')
 
 
-@sched.scheduled_job('interval', minutes=1)
+@sched.scheduled_job('interval', seconds=30)
 def timed_job():
 	print('Starting updateStatus')
 	updateStatus()
