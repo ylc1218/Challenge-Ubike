@@ -15,7 +15,6 @@ import com.google.maps.GeocodingApi;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.AddressComponent;
 import com.google.maps.model.AddressComponentType;
-import com.google.maps.model.AddressType;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import com.sun.net.httpserver.HttpExchange;
@@ -126,15 +125,14 @@ class HttpWorker implements Runnable{
 		GeoApiContext context = new GeoApiContext().setApiKey(System.getenv("GEO_API_KEY"));
 		GeocodingResult[] results =  GeocodingApi.newRequest(context)
 		        					.latlng(new LatLng(lat, lng)).language("en")
-		        					.resultType(AddressType.ADMINISTRATIVE_AREA_LEVEL_1)
 		        					.await();
-		
-		if (results.length == 0) return false; // invalid address
-		
-		for(AddressComponent ac : results[0].addressComponents){
-			for (AddressComponentType acType : ac.types){
-				if (acType == AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1) {
-					return "Taipei City".equals(ac.shortName);
+				
+		for(GeocodingResult res: results){
+			for(AddressComponent ac : res.addressComponents){
+				for (AddressComponentType acType : ac.types){
+					if (acType == AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1) {
+						return "Taipei City".equals(ac.shortName);
+					}
 				}
 			}
 		}
