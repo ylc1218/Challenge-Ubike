@@ -5,10 +5,7 @@ import gzip
 import json
 import os
 import urlparse
-
 import psycopg2.extensions
-#psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
-#psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
 
 def retrieveData():
@@ -50,35 +47,45 @@ def getConnection():
 		print str(e)
 
 
-def execSql(sql, tuples, conn):
+def executeSql(sql, conn):
 	cur = conn.cursor()
 	try:
-		cur.executemany(sql, tuples)
+		cur.execute(sql)
 		conn.commit()
 	except Exception as e:
 		print "unable to execute sql"
 		print str(e)
 
 
-def updateInfo():
-	data = retrieveData()
-	conn = getConnection()	
-
-	tuples = [(k, v["sna"], v["lat"], v["lng"]) for k, v in data["retVal"].iteritems()]
-	sql = "INSERT INTO ubike_info (id, sna, lat, lng) VALUES(%s,%s,%s,%s) \
-			ON CONFLICT (id) DO UPDATE SET \
-			sna = EXCLUDED.sna, lat = EXCLUDED.lat, lng = EXCLUDED.lng"
-	execSql(sql, tuples, conn)
-	print "Info updated"
-
-def updateStatus():
+def update():
 	data = retrieveData()
 	conn = getConnection()
+	cur = conn.cursor()
 
-	tuples = [(k, v["sbi"], v["act"]) for k, v in data["retVal"].iteritems()]
-	sql = "INSERT INTO ubike_status (id, sbi, act) VALUES(%s,%s,%s) \
-			ON CONFLICT (id) DO UPDATE SET \
-			sbi = EXCLUDED.sbi, act = EXCLUDED.act"
-	execSql(sql, tuples, conn)
-	print "Status updated"
+	ids = [(k) for k, v in data["retVal"].iteritems()]
+	infos = [(k, v["sna"], v["lat"], v["lng"]) for k, v in data["retVal"].iteritems()]
+	status = [(k, v["sbi"], v["act"]) for k, v in data["retVal"].iteritems()]
 
+	# delete old info
+	id_val = '(' + ','.join(ids) + ')'
+	sql = "DELETE from ubike_info where id not in " + id_val
+	executeSql(sql, conn)
+	print "delete old info"
+
+	# update info
+	info_val = ','.join(cur.mogrify('(%s,%s,%s,%s)', row) for row in infos)
+	sql = "INSERT INTO ubike_info (id, sna, lat, lng) VALUES " + info_val \
+		+ "ON CONFLICT (id) DO UPDATE SET " \
+		+ "sna = EXCLUDED.sna, lat = EXCLUDED.lat, lng = EXCLUDED.lng"
+	executeSql(sql, conn)
+	print "update info"
+
+	# update status
+	status_val = ','.join(cur.mogrify('(%s,%s,%s)', row) for row in status);
+	sql = "INSERT INTO ubike_status VALUES " + status_val \
+		+ " ON CONFLICT (id) DO UPDATE SET" \
+		+ " sbi = EXCLUDED.sbi, act = EXCLUDED.act"
+	executeSql(sql, conn)
+	print "update status"
+
+	conn.close()
